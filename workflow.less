@@ -1,0 +1,80 @@
+@Workflow: {
+    id: "workflow_001";
+    name: "Document Approval";
+    description: "A process to review and approve documents";
+    steps: [
+        // Step 1: Submit Document
+        {
+            id: "step_001";
+            name: "Submit Document";
+            description: "User submits a document for review";
+            inputs: [
+                { id: "input_001"; type: "file"; value: "Document.pdf"; }
+            ];
+            outputs: [
+                { id: "output_001"; type: "confirmation"; value: "Submitted"; }
+            ];
+            actor: { id: "actor_001"; name: "John Doe"; role: "User"; };
+            conditions: [];
+            nextSteps: ["step_002"];
+        },
+
+        // Step 2: Review Document
+        {
+            id: "step_002";
+            name: "Review Document";
+            description: "Reviewer evaluates the submitted document";
+            inputs: [
+                { id: "input_001"; type: "file"; value: "Document.pdf"; }
+            ];
+            outputs: [
+                { id: "output_002"; type: "decision"; value: "Approved/Rejected"; }
+            ];
+            actor: { id: "actor_002"; name: "Jane Smith"; role: "Reviewer"; };
+            conditions: [
+                { id: "condition_001"; description: "Document must be valid"; expression: "valid(document)"; }
+            ];
+            nextSteps: ["step_003"];
+        },
+
+        // Step 3: Finalize Document
+        {
+            id: "step_003";
+            name: "Finalize Document";
+            description: "Performs final actions based on the review decision.";
+            inputs: [
+                { id: "input_002"; type: "decision"; value: "Approved/Rejected"; }
+            ];
+            outputs: [
+                { id: "output_003"; type: "notification"; value: "Document finalized and notifications sent"; }
+            ];
+            actor: { id: "actor_003"; name: "System Automation"; role: "System"; };
+            conditions: [
+                { id: "condition_002"; description: "Decision must exist"; expression: "decision != null"; }
+            ];
+            nextSteps: []; // No further steps, marks the end of the workflow
+        }
+    ];
+    actors: [
+        { id: "actor_001"; name: "John Doe"; role: "User"; },
+        { id: "actor_002"; name: "Jane Smith"; role: "Reviewer"; },
+        { id: "actor_003"; name: "System Automation"; role: "System"; }
+    ];
+    metrics: {
+        id: "metrics_001";
+        totalTime: "2 hours";
+        completedSteps: 2;
+        pendingSteps: 1;
+        bottlenecks: [];
+    };
+    startTrigger: {
+        id: "trigger_001";
+        type: "event";
+        criteria: "document_uploaded";
+    };
+    endState: {
+        id: "end_001";
+        description: "Document approved or rejected and notifications sent";
+        outputs: ["output_003"];
+    };
+}
